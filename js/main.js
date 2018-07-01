@@ -1,19 +1,39 @@
 //Register Service Worker
-//if service worker is not available, no need for IDB
-if (navigator.serviceWorker){
-    navigator.serviceWorker.register('./sw.js', { scope: './'}).then(function() {
-        console.log('Service Worker Installed');
+// if (navigator.serviceWorker){
+//     navigator.serviceWorker.register('./sw.js', { scope: './'}).then(function(reg) {
+//         if (reg.waiting) {
+//             updateServiceWorker(reg.waiting)
+//         }
+//         if (reg.installing) {
+//             installingServiceWorker(reg.installing)
+//         }
+//     });
+// }
+
+function updateServiceWorker(worker) {
+    worker.postMessage({action: 'skipWaiting'});
+}
+
+function installingServiceWorker(worker) {
+    worker.addEventListener('statechange', function() {
+        if (worker.state == 'installed') {
+          updateServiceWorker(worker)
+        }
     });
 }
+
 dbPromise = function openDatabase() {
     return idb.open('currency_converter', 1, function(upgradeDb) {
         switch (upgradeDb.oldVersion) {
             case 0:
-                const currency = upgradeDb.createObjectStore('currencies', {keyPath: 'id'});
-                const converted = upgradeDb.createObjectStore('converted', {keyPath: 'id'});
+                upgradeDb.createObjectStore('currencies', {keyPath: 'id'});
+                upgradeDb.createObjectStore('converted', {keyPath: 'id'});
         }
     })
 }
+function numberWithCommas(num){
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
 
 function createElement(el, text, value) {
     var option = document.createElement(el);
@@ -45,10 +65,9 @@ function sortKey(a, b) {
 
 function addCurrencyToDatabase(currencies) {
     dbPromise().then(function(db) {
-        if (!db) return;
         let tx = db.transaction('currencies', 'readwrite');
         let currencyStore = tx.objectStore('currencies');
-        currencies.forEach(currency => {
+        currencies.forEach((currency) => {
             currencyStore.put(currency)
         });
         return tx.complete;
@@ -69,11 +88,10 @@ function storeConversionRates(...rates) {
 
 function getConversionRates(convert_currency, convert_currency_reverse) {
     return dbPromise().then(function(db) {
-        if (!db) return;
         let tx = db.transaction('converted');
         let currencyStore = tx.objectStore('converted');
         return currencyStore.get(convert_currency);
-    }).then(function(rate) {
+    }).then( (rate) => {
         if (!rate) return fetchCurrencyRates(convert_currency, convert_currency_reverse, 1);
         calculateConversion(rate.val);
         fetchCurrencyRates(convert_currency, convert_currency_reverse, 0);
@@ -83,13 +101,13 @@ function getConversionRates(convert_currency, convert_currency_reverse) {
 function fetchCurrencyRates(convert_currency, convert_currency_reverse, calculate) {
     fetch(`https://free.currencyconverterapi.com/api/v5/convert?q=${convert_currency},${convert_currency_reverse}&compact=y`).then(function(response) {
         return response.json();
-    }).then(function(myjson) {
+    }).then((myjson) => {
         const rate = myjson[convert_currency].val;
         const result = {id: convert_currency, val: myjson[convert_currency].val};
         const result_reverse = {id: convert_currency_reverse, val: myjson[convert_currency_reverse].val};
         storeConversionRates(result, result_reverse);
         if (calculate === 1) calculateConversion(rate);
-    }).catch(function() {
+    }).catch(() => {
         if (calculate === 1) {
             document.getElementById('answer').innerText = 'Oops, seems you have no connection';
             document.getElementById('loading').style.display= 'none';     
@@ -99,29 +117,28 @@ function fetchCurrencyRates(convert_currency, convert_currency_reverse, calculat
 
 function calculateConversion(rate) {
     const amount = (getValue('amount', 'input')) == '' ? 1 : getValue('amount', 'input');
-    let total = Math.round(rate * amount * 100) / 100;
+    let total = numberWithCommas(Math.round(rate * amount * 100) / 100);
     document.getElementById('loading').style.display= 'none';
-    document.getElementById('answer').innerText = `Exchange Rate: ${total}`
+    document.getElementById('answer').innerText = `Exchange Value: ${total}`
 }
 
 function fetchCurrencyAPI() {
     return fetch('https://free.currencyconverterapi.com/api/v5/currencies').then(function(response) {
         return response.json();
-    }).then(function(datas) {
+    }).then((datas) => {
         let values = datas.results;
         values = Object.values(values);
         showDataOnForm(values);
         addCurrencyToDatabase(values);
-    }).catch(function(e) {
-      console.log(e);
-      console.log('Ooops, seems you have no connection');
+    }).catch( (e) => {
+        document.getElementById('answer').innerText = 'Oops, seems you have no connection';
+        document.getElementById('loading').style.display= 'none'; 
     });
 }
 
 function getCurrency() {
     //Retrieve currency From Database
     dbPromise().then(function(db) {
-        if (!db) return;
         let tx = db.transaction('currencies');
         let currencyStore = tx.objectStore('currencies');
         let currency_count = currencyStore.count();
@@ -130,8 +147,8 @@ function getCurrency() {
             return currencyStore.getAll();
         }).then(function name(cursor) {
             showDataOnForm(cursor); 
-        }).catch(function() {
-            return fetchCurrencyAPI();
+        }).catch(() => {
+            fetchCurrencyAPI();
         })
     })
 }
