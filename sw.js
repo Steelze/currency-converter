@@ -22,12 +22,11 @@ self.addEventListener('activate', function(event) {
 });
 
 self.addEventListener('fetch', function(event) {
-    a =  new URL(event.request.url);
-    if (a.origin ===location.origin) {
+    let resource =  new URL(event.request.url);
+    if (resource.origin ===location.origin) {
         event.respondWith(
             caches.match(event.request).then(function(response) {
                 if (response) {
-                    console.log(`Service worker found in cache, ${event.request.url}`);
                     return response
                 }
                 return fetch(event.request);
