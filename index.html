@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="./dist/bootstrap.min.css">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
-    <link rel="stylesheet" href="./css/main.css">
-    <title>Document</title>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <link rel="shortcut icon" type="image/ico" href="img/favicon.ico"/>
+        <link rel="stylesheet" href="dist/bootstrap.min.css">
+        <link rel="stylesheet" href="css/main.css">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+        <script src="js/indexedDb.js"></script>
+        <script src="js/main.js"></script>
+    <title>Currency | Converter</title>
 </head>
 <body>
     <div class="container">
@@ -19,8 +22,14 @@
                     </div>
                 </div>
             </div>
+            <div class="col-sm-4 offset-sm-4 text-center" id="loading">
+                <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+            </div>
+            <div class="col-sm-4 offset-sm-4 text-center mb-4">
+                    <h4 id="answer"></h4>
+            </div>
             <div class="col-sm-8 offset-sm-2">
-                <form id="form" style="display: none">
+                <form id="form" style="display: none;">
                     <div class="form-row">
                         <div class="form-group col-sm-5">
                             <select name="" id="currency-1" class="form-control">
@@ -42,21 +51,13 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-sm-4">
+                        <div class="col-sm-4 offset-sm-4 text-center">
                             <button class="btn btn-danger" id="convert">Convert</button>
-                        </div>
-                        <div class="col-sm-4">Exchange Rate:</div>
-                        <div class="col-sm-4">
-                            <input type="number" readonly placeholder="Exchange Rate" class="form-control" min="0" id="answer">
-                        </div>
+                        </div>   
                     </div>
                 </form>
             </div>
         </div>
     </div>
-    <script src="./dist/jquery.min.js"></script>
-    <script src="./dist/bootstrap.min.js"></script>
-    <script src="js/app.js"></script>
-    <script src="js/main.js"></script>
 </body>
 </html>

@@ -1,0 +1,37 @@
+const staticCacheNamme = 'curr-converter-static-v1';
+const itemCache = ['/','js/main.js', 'js/indexedDb.js', 'css/main.css', 'dist/bootstrap.min.css', 'https://use.fontawesome.com/releases/v5.1.0/css/all.css'];
+
+self.addEventListener('install', function(event) {
+    event.waitUntil(
+        caches.open(staticCacheNamme).then(function(cache) {
+            return cache.addAll(itemCache);
+        })
+    );
+});
+
+self.addEventListener('activate', function(event) {
+    event.waitUntil(
+        caches.keys().then(function(cacheNames) {
+            return Promise.all(cacheNames.map(function(thisCacheName) {
+                if (thisCacheName !== staticCacheNamme && thisCacheName.startsWith('curr-converter-')) {
+                  return  caches.delete(thisCacheName);
+                }
+            }))
+        })
+    );
+});
+
+self.addEventListener('fetch', function(event) {
+    a =  new URL(event.request.url);
+    if (a.origin ===location.origin) {
+        event.respondWith(
+            caches.match(event.request).then(function(response) {
+                if (response) {
+                    console.log(`Service worker found in cache, ${event.request.url}`);
+                    return response
+                }
+                return fetch(event.request);
+            })
+        )
+    }
+});
