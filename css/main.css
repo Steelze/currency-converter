@@ -67,7 +67,7 @@
 .btn-danger.focus, .btn-danger:focus {
   box-shadow: 0 0 0 0.2rem rgba(101, 217, 228, 0.5) !important;
 }
-.navbar.navbar-light.bg-light{
+.bg-light{
   background: #00bfff91 !important; 
   display: block !important;
 }

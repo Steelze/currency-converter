@@ -1,14 +1,14 @@
 //Register Service Worker
-// if (navigator.serviceWorker){
-//     navigator.serviceWorker.register('./sw.js', { scope: './'}).then(function(reg) {
-//         if (reg.waiting) {
-//             updateServiceWorker(reg.waiting)
-//         }
-//         if (reg.installing) {
-//             installingServiceWorker(reg.installing)
-//         }
-//     });
-// }
+if (navigator.serviceWorker){
+    navigator.serviceWorker.register('./sw.js', { scope: './'}).then(function(reg) {
+        if (reg.waiting) {
+            updateServiceWorker(reg.waiting)
+        }
+        if (reg.installing) {
+            installingServiceWorker(reg.installing)
+        }
+    });
+}
 
 function updateServiceWorker(worker) {
     worker.postMessage({action: 'skipWaiting'});
