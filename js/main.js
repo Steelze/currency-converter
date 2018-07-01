@@ -1,6 +1,6 @@
 //Register Service Worker
 if (navigator.serviceWorker){
-    navigator.serviceWorker.register('./sw.js', { scope: './'}).then(function(reg) {
+    navigator.serviceWorker.register('./sw.js').then(function(reg) {
         if (reg.waiting) {
             updateServiceWorker(reg.waiting)
         }
