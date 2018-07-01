@@ -1,5 +1,5 @@
 const staticCacheNamme = 'curr-converter-static-v1';
-const itemCache = ['/','js/main.js', 'js/indexedDb.js', 'css/main.css', 'dist/bootstrap.min.css', 'https://use.fontawesome.com/releases/v5.1.0/css/all.css', 'img/favicon.ico'];
+const itemCache = ['/','/js/main.js', '/js/indexedDb.js', '/css/main.css', '/dist/bootstrap.min.css', 'https://use.fontawesome.com/releases/v5.1.0/css/all.css', '/img/favicon.ico'];
 
 self.addEventListener('install', function(event) {
     event.waitUntil(
