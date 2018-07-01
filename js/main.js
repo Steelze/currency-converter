@@ -36,14 +36,14 @@ function numberWithCommas(num){
   }
 
 function createElement(el, text, value) {
-    var option = document.createElement(el);
+    let option = document.createElement(el);
     option.text = `${text} (${value})`;
     option.value = value;
     return option;
 }
 
 function appendToTag(tag, ele) {
-    var select = document.getElementById(tag);
+    let select = document.getElementById(tag);
     select.appendChild(ele);
 }
 
