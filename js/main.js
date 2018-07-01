@@ -170,8 +170,8 @@ window.addEventListener('DOMContentLoaded', function() {
         document.getElementById('loading').style.display= 'block';
         const currency_1 = getValue('currency-1');
         const currency_2 = getValue('currency-2');       
-        const convert_currency = currency_1 + '_' + currency_2;
-        let convert_currency_reverse = currency_2 + '_' + currency_1;
+        const convert_currency = `${currency_1}_${currency_2}`;
+        let convert_currency_reverse = `${currency_2}_${currency_1}`;
         getConversionRates(convert_currency, convert_currency_reverse);
     });
 });
