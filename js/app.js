@@ -1,3 +1,6 @@
+const apiKey = '98b713dc18f115197d07';
+const url = ``;
+
 // document.querySelector('#amount').classList.add('field-error');
 document.querySelector('#error-msg').classList.add('d-none');
 document.querySelector('#processing').classList.add('d-none');
