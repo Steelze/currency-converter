@@ -6,13 +6,24 @@ document.querySelector('#processing').classList.add('d-none');
 
 //Register service worker
 if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js').then(function(reg) {
-    // Registration was successful
-    console.log('ServiceWorker registration successful with scope: ', reg.scope);
-    console.log('ServiceWorker registration waiting: ', reg.waiting);
-    console.log('ServiceWorker registration installing: ', reg.installing);
-    }, function(err) {
-    // registration failed :(
-    console.log('ServiceWorker registration failed: ', err);
+    navigator.serviceWorker.register('./sw.js').then(reg => {
+        // Registration was successful
+        if (reg.waiting) updateServiceWorker();
+        
+        reg.addEventListener('updatefound', _ => {
+            installingServiceWorker(reg.installing);
+        });
+    }).catch(err => console.log('ServiceWorker registration failed: ', err));
+}
+
+function updateServiceWorker() {
+    console.log('Update service worker!!!!!!!!!!!!!!!');
+}
+
+function installingServiceWorker(worker) {
+    worker.addEventListener('statechange', _ => {
+       if (worker.state === 'installed') {
+            updateServiceWorker()
+       }
     });
 }
