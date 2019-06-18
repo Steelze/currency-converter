@@ -43,21 +43,21 @@
 
         <div class="result py-2 bg-light text-center">
             <div class="container">
-                <section id="processing">
+                <section id="processing" class="d-none">
                     <div class="d-flex align-items-center mx-auto w-50">
-                        <strong>Converting...</strong>
+                        <strong></strong>
                         <div class="spinner-border text-nile-blue ml-auto" role="status" aria-hidden="true"></div>
                     </div>
                 </section>
-                <section id="result">
+                <section id="result" class="d-none">
                     <span class="text-muted">2 United States Dollar equals</span>
                     <br>
                     <span class="text-nile-blue display-5 p-2">4,320.00 Nigerian Naira</span>
                 </section>
-                <section class="text-muted mt-3" id="info">
+                <section class="text-muted mt-3 d-none" id="info">
                     <u>1 Nigerian Naira = 0.0027778 American Dollar</u>
                 </section>
-                <section class="text-danger display-5 p-3" id="error-msg">Oops..No connection detected</section>
+                <section class="text-danger display-5 p-3 d-none" id="error-msg">Oops..No connection detected</section>
             </div>
         </div>
     
@@ -67,27 +67,19 @@
                     <div class="form-row">
                         <div class="form-group col-sm-6">
                             <label for="currency1" class="form-text text-white text-uppercase font-weight-bold">From</label>
-                            <select name="" id="currency1" class="form-control">
-                                <option value="">A</option>
-                                <option value="">A</option>
-                                <option value="">A</option>
-                            </select>
+                            <select name="" id="currency1" class="form-control"></select>
                         </div>
                         <div class="form-group col-sm-6">
                             <label for="currency2" class="form-text text-white text-uppercase font-weight-bold">To</label>
-                            <select name="" id="currency1" class="form-control">
-                                <option value="">A</option>
-                                <option value="">A</option>
-                                <option value="">A</option>
-                            </select>
+                            <select name="" id="currency2" class="form-control"></select>
                         </div>
                         <div class="form-group col-sm-6 offset-sm-3">
                             <label for="amount" class="form-text text-white text-uppercase font-weight-bold">Amount</label>
                             <input type="number" class="form-control" id="amount" min="0" placeholder="0.00">
-                            <small class="text-white"><i class="fa fa-times"></i><em> Enter valid amount</em></small>
+                            <small class="text-white d-none" id="amount-error"><i class="fa fa-times"></i> <em></em></small>
                         </div>
                         <div class="form-group col-sm-4 offset-sm-4 text-center">
-                            <button type="submit" class="btn btn-danger">Convert</button>
+                            <button type="submit" class="btn btn-danger" id="submit">Convert</button>
                         </div>
                     </div>
                 </form>

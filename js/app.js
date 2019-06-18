@@ -1,11 +1,85 @@
-const apiKey = '98b713dc18f115197d07';
-const url = ``;
+// const api_key = '98b713dc18f115197d07';
+const api_key = 'uiy23478q5q';
+const base_url = `https://free.currconv.com/api/v7/`;
+const convert_url = `${base_url}convert?q=USD_PHP&compact=ultra&apiKey=${api_key}`;
+const currencies_url = `${base_url}currencies?apiKey=${api_key}`
 
-// document.querySelector('#amount').classList.add('field-error');
-document.querySelector('#error-msg').classList.add('d-none');
-document.querySelector('#processing').classList.add('d-none');
-// document.querySelector('#result').classList.add('d-none');
-// document.querySelector('#info').classList.add('d-none');
+const amount_field = document.querySelector('#amount');
+const amount_error_div = document.querySelector('#amount-error em');
+const currency_field_1 = document.querySelector('#currency1');
+const currency_field_2 = document.querySelector('#currency2');
+const processing_div = document.querySelector('#processing');
+const processing_div_text = document.querySelector('#processing strong');
+const result_div = document.querySelector('#result');
+const info_div = document.querySelector('#info');
+const submit_button = document.querySelector('#submit');
+
+function disableSubmitButton() {
+    submit_button.disabled = true;
+}
+
+function enableSubmitButton() {
+    submit_button.disabled = false;
+}
+
+function hideProcessingDiv() {
+    processing_div.classList.add('d-none');
+    processing_div_text.textContent = '';
+}
+
+function highlightField() {
+    amount_field.classList.add('field-error');
+    amount_field.nextSibling.nextSibling.classList.remove('d-none');
+    amount_error_div.textContent = ' Enter valid value'
+}
+
+function removehighlightFromField() {
+    amount_field.classList.remove('field-error');
+    amount_field.nextSibling.nextSibling.classList.add('d-none');
+    amount_error_div.textContent = ''
+}
+
+function showProcessingDiv(text = 'Processing...') {
+    processing_div.classList.remove('d-none');
+    processing_div_text.textContent = text;
+}
+
+function isAmountValid() {
+    const value = amount_field.value;
+    return (value.trim() === '' || value < 1 || isNaN(value)) ? false : true;
+}
+
+amount_field.addEventListener('keyup', _ => {
+    if (isAmountValid()) {
+        enableSubmitButton();
+        removehighlightFromField();
+    } else {
+        disableSubmitButton();
+        highlightField();
+    }
+});
+
+
+function fetchCurrency() {
+    fetch(currencies_url)
+    .then(function(response) {
+        return response.json();
+    })
+    .then((datas) => {
+        console.log(datas);
+        
+    })
+    .catch(e => console.log('Error ooo', e));
+}
+
+const app = async _ => {
+    console.log('Initializing App');
+    showProcessingDiv('Starting Application...');
+    // fetchCurrency().then(e => console.log(e)).catch(r => console.log('Error ooo', r));
+    fetchCurrency();
+}
+
+app().then(_ => console.log('After initiallizing'));
 
 //Register service worker
 // if ('serviceWorker' in navigator) {
