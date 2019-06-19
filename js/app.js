@@ -1,3 +1,5 @@
+let sw, refreshing;
+
 const app = async _ => {
     showProcessingDiv('Starting Application...');
     fetchCurrencies()
@@ -70,23 +72,43 @@ form.addEventListener('submit', e => {
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js').then(reg => {
         // Registration was successful
-        if (reg.waiting) updateServiceWorker();
-
-        reg.addEventListener('updatefound', _ => {
-            installingServiceWorker(reg.installing);
-        });
+        if (reg.waiting) updateServiceWorker(reg.waiting);
+        reg.addEventListener('updatefound', _ => installingServiceWorker(reg.installing));
     }).catch(err => console.log('ServiceWorker registration failed: ', err));
-}
-
-function updateServiceWorker() {
-    console.log('Update service worker!!!!!!!!!!!!!!!');
-}
-
-function installingServiceWorker(worker) {
-    worker.addEventListener('statechange', _ => {
-       if (worker.state === 'installed') {
-            updateServiceWorker()
-       }
+    let refreshing;
+   // The event listener that is fired when the service worker updates
+    navigator.serviceWorker.addEventListener('controllerchange', function () {
+      if (refreshing) return;
+      location.reload();
+      refreshing = true;
     });
 }
 
+
+function installingServiceWorker(worker) {
+    worker.addEventListener('statechange', _ => {
+        if (worker.state === 'installed') {
+            updateServiceWorker(worker)
+        }
+    });
+}
+
+function updateServiceWorker(worker) {
+    snackbar.classList.add('show');
+    sw = worker;
+}
+
+cancel_worker_update.addEventListener('click', e => {
+    e.preventDefault();
+    e.stopPropagation();
+    snackbar.classList.remove('show');
+});
+
+update_worker.addEventListener('click', e => {
+    e.preventDefault();
+    e.stopPropagation();
+    snackbar.classList.remove('show');
+    if (sw) {
+        sw.postMessage({action: 'skipWaiting'});
+    }
+});

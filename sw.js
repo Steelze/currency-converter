@@ -1,5 +1,6 @@
-const STATIC_CACHE = 'static-v0.0.1';
-const DYNAMIC_CACHE = 'dynamic-v0.0.1';
+const VERSION = 'v0.0.3';
+const STATIC_CACHE = `static-${VERSION}`;
+const DYNAMIC_CACHE = `dynamic-${VERSION}`;
 const STATIC_FILES = [
   './',
   './index.html',
@@ -44,6 +45,7 @@ self.addEventListener('activate', function(event) {
             );
         })
     );
+    return self.clients.claim();
 });
 
 self.addEventListener('fetch', function(event) {
@@ -71,5 +73,11 @@ self.addEventListener('fetch', function(event) {
                 });
             })
         );
+    }
+});
+
+self.addEventListener('message', function(event) {
+    if (event.data.action === 'skipWaiting') {
+      self.skipWaiting();
     }
 });

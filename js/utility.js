@@ -13,6 +13,9 @@ const result_div = document.querySelector('#result');
 const info_div = document.querySelector('#info');
 const submit_button = document.querySelector('#submit');
 const app_error_field = document.querySelector('#error-msg');
+const snackbar = document.querySelector('#snackbar');
+const update_worker = document.querySelector('#update-worker');
+const cancel_worker_update = document.querySelector('#cancel-update');
 
 
 
