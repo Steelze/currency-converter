@@ -1,6 +1,5 @@
 const api_key = '98b713dc18f115197d07';
 const base_url = `https://free.currconv.com/api/v7/`;
-const convert_url = `${base_url}convert?q=USD_PHP&compact=ultra&apiKey=${api_key}`;
 const currencies_url = `${base_url}currencies?apiKey=${api_key}`
 
 const form = document.querySelector('form');
@@ -23,14 +22,30 @@ function enableSubmitButton() {
     submit_button.disabled = false;
 }
 
+// https://blog.abelotech.com/posts/number-currency-formatting-javascript/
+function formatAmount(amount) {    
+    return Number(amount).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+}
+
 function hideApplicationError() {
     app_error_field.classList.add('d-none');
-    app_error_field_text.textContent = '';
+    app_error_field.textContent = '';
 }
 
 function hideProcessingDiv() {
     processing_div.classList.add('d-none');
     processing_div_text.textContent = '';
+    enableSubmitButton();
+}
+
+function hideResultDiv() {
+    result_div.classList.add('d-none');
+    result_div.innerHTML = '';
+}
+
+function hideInfoDiv() {
+    info_div.classList.add('d-none');
+    info_div.innerHTML = '';
 }
 
 function highlightField() {
@@ -54,11 +69,27 @@ function showApplicationError(text = 'Oops... Something went wrong') {
 function showProcessingDiv(text = 'Processing...') {
     processing_div.classList.remove('d-none');
     processing_div_text.textContent = text;
+    disableSubmitButton();
+}
+
+function showResultDiv({from_name, to_name, amount, result} = {}) {
+    hideProcessingDiv();
+    result_div.classList.remove('d-none');
+    result_div.innerHTML = `<span class="text-muted">${amount} ${from_name} equals</span>
+    <br>
+    <span class="text-nile-blue display-5 p-2">${formatAmount(result)} ${to_name}</span>`;
+    showInfoDiv({from_name, to_name, amount, result})
+}
+
+function showInfoDiv({from_name, to_name, amount, result} = {}) {
+    info_div.classList.remove('d-none');
+    const value = result / amount;
+    info_div.innerHTML = `<u>1 ${from_name} = ${value} ${to_name}</u>`;
 }
 
 function isAmountValid() {
     const value = amount_field.value;
-    return (value.trim() === '' || value < 1 || isNaN(value)) ? false : true;
+    return (value.trim() === '' || value <= -1 || isNaN(value)) ? false : true;
 }
 
 amount_field.addEventListener('keyup', _ => {
@@ -135,3 +166,44 @@ function installingServiceWorker(worker) {
        }
     });
 }
+
+form.addEventListener('submit', e => {
+    e.preventDefault();
+    e.stopPropagation();
+    hideApplicationError();
+    hideResultDiv();
+    hideInfoDiv();
+    if (!isAmountValid()) {
+        disableSubmitButton();
+        highlightField();
+        return;
+    }
+    if (currency_field_1.value === '' || currency_field_2.value === '') {
+        return false;
+    }
+    
+    showProcessingDiv('Converting...')
+    const from = currency_field_1.value;
+    const from_name = currency_field_1.options[currency_field_1.selectedIndex].text;
+    const to = currency_field_2.value;
+    const to_name = currency_field_2.options[currency_field_2.selectedIndex].text;
+    const amount = amount_field.value;
+    if (from === to) {
+        showResultDiv({from_name, to_name, amount, result: amount});
+        return;
+    }
+    const from_to = `${from}_${to}`;
+    const to_from = `${to}_${from}`;
+    fetch(`${base_url}convert?q=${from_to},${to_from}&compact=ultra&apiKey=${api_key}`)
+    .then(function(response) {
+        return response.json();
+    }).then( data => {
+        const result = amount * data[from_to];
+        showResultDiv({from_name, to_name, amount, result});
+    }).catch(error => {
+        console.log(error);
+        const error_msg = error.message.split('.')[0];
+        showApplicationError(error_msg);
+    })
+    
+});
