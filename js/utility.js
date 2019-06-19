@@ -112,7 +112,7 @@ function appendCurrenciesToSelect(currencies){
 
 function fetchCurrencies() {
     return fetch(currencies_url)
-    .then(function(response) {
+    .then(response => {
         return response.json();
     }).then( data => {
         if (data.status === 400) {
