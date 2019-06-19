@@ -13,30 +13,6 @@ const app = async _ => {
 //Initialize App
 app().then(_ => hideProcessingDiv());
 
-//Register service worker
-// if ('serviceWorker' in navigator) {
-//     navigator.serviceWorker.register('./sw.js').then(reg => {
-//         // Registration was successful
-//         if (reg.waiting) updateServiceWorker();
-
-//         reg.addEventListener('updatefound', _ => {
-//             installingServiceWorker(reg.installing);
-//         });
-//     }).catch(err => console.log('ServiceWorker registration failed: ', err));
-// }
-
-function updateServiceWorker() {
-    console.log('Update service worker!!!!!!!!!!!!!!!');
-}
-
-function installingServiceWorker(worker) {
-    worker.addEventListener('statechange', _ => {
-       if (worker.state === 'installed') {
-            updateServiceWorker()
-       }
-    });
-}
-
 //Handle keyup event on amount input field
 amount_field.addEventListener('keyup', _ => {
     if (isAmountValid()) {
@@ -89,3 +65,28 @@ form.addEventListener('submit', e => {
     })
     
 });
+
+//Register service worker
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').then(reg => {
+        // Registration was successful
+        if (reg.waiting) updateServiceWorker();
+
+        reg.addEventListener('updatefound', _ => {
+            installingServiceWorker(reg.installing);
+        });
+    }).catch(err => console.log('ServiceWorker registration failed: ', err));
+}
+
+function updateServiceWorker() {
+    console.log('Update service worker!!!!!!!!!!!!!!!');
+}
+
+function installingServiceWorker(worker) {
+    worker.addEventListener('statechange', _ => {
+       if (worker.state === 'installed') {
+            updateServiceWorker()
+       }
+    });
+}
+
