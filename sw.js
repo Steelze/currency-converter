@@ -1,7 +1,7 @@
 importScripts('./js/idb.js');
 importScripts('./js/dbutils.js');
 
-const VERSION = 'v0.1.1';
+const VERSION = 'v0.1.0';
 const STATIC_CACHE = `static-${VERSION}`;
 const DYNAMIC_CACHE = `dynamic-${VERSION}`;
 const STATIC_FILES = [
