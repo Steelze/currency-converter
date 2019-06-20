@@ -1,7 +1,7 @@
 importScripts('./js/idb.js');
 importScripts('./js/dbutils.js');
 
-const VERSION = 'v0.1.0';
+const VERSION = 'v0.1.1';
 const STATIC_CACHE = `static-${VERSION}`;
 const DYNAMIC_CACHE = `dynamic-${VERSION}`;
 const STATIC_FILES = [
@@ -21,7 +21,8 @@ function isInStaticCache(string) {
     let cache_path;
     //Check if file is on our domain or CDN
     if (string.includes(self.origin)) {
-        cache_path = `.${string.substring(self.origin.length)}`;
+        cache_path = string.substring(self.origin.length);
+        // cache_path = `.${string.substring(self.origin.length)}`;
     } else {
         cache_path = string
     }
