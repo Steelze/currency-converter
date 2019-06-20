@@ -1,4 +1,7 @@
-const VERSION = 'v0.0.3';
+importScripts('./js/idb.js');
+importScripts('./js/dbutils.js');
+
+const VERSION = 'v0.1.0';
 const STATIC_CACHE = `static-${VERSION}`;
 const DYNAMIC_CACHE = `dynamic-${VERSION}`;
 const STATIC_FILES = [
@@ -7,7 +10,9 @@ const STATIC_FILES = [
   './css/app.css',
   './css/bootstrap.css',
   './js/app.js',
+  './js/idb.js',
   './js/utility.js',
+  './js/dbutils.js',
   './icons/favicon.ico',
   'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css',
 ];
@@ -49,10 +54,28 @@ self.addEventListener('activate', function(event) {
 });
 
 self.addEventListener('fetch', function(event) {
-    if (event.request.url.includes('free.currconv.com/api/v7/')) {
-        console.log('This is a request to currency api, let idb handle this', event.request.url);
+    if (event.request.url.includes('free.currconv.com/api/v7/currencies')) {
         event.respondWith(
-            fetch(event.request)
+            getCurrenciesFromDb().then(function name(currencies) {
+                if (!currencies.length) {
+                    throw new Error('Could not find in database, go to network');
+                }             
+                // Still go to network to get data;
+                fetch(event.request).then( response => saveCurrenciesData(response.json())).catch(e => console.log(e))
+                return new Response(JSON.stringify({results: currencies}),  { "status" : 200 , "statusText" : "Fetched Currencies From DB" })
+             }).catch(e => {
+                return fetch(event.request).then( response => {
+                    saveCurrenciesData(response.clone().json());
+                    return response;
+                })
+            })
+        );
+    } else if(event.request.url.includes('free.currconv.com/api/v7/convert')) {
+        event.respondWith(
+            fetch(event.request).then( response => {
+                saveRateData(response.clone().json());
+                return response;
+            })
         );
     } else if(isInStaticCache(event.request.url)) {
         event.respondWith(
@@ -63,8 +86,9 @@ self.addEventListener('fetch', function(event) {
             fetch(event.request)
         );
     } else {
-        event.respondWith(
+        event.respondWith( 
             caches.open(DYNAMIC_CACHE).then(function(cache) {
+                console.log(event.request.url);
                 return cache.match(event.request).then(function (response) {
                     return response || fetch(event.request).then(function(response) {
                       cache.put(event.request, response.clone());

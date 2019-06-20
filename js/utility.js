@@ -77,7 +77,7 @@ function showProcessingDiv(text = 'Processing...') {
     disableSubmitButton();
 }
 
-function showResultDiv({from_name, to_name, amount, result} = {}) {
+function showResultDiv({from_name, to_name, amount, result} = {}) {    
     hideProcessingDiv();
     result_div.classList.remove('d-none');
     result_div.innerHTML = `<span class="text-muted">${amount} ${from_name} equals</span>
@@ -107,6 +107,12 @@ function createOptionTag(text = '', value = '') {
 
 function appendCurrenciesToSelect(currencies){
     const entries = Object.values(currencies)
+    entries.sort(function sortKey(a, b) {
+        if (a.currencyName < b.currencyName) return -1;
+        if (a.currencyName > b.currencyName) return 1;
+        return 0;
+    });
+    
     for (const currency of entries) {
         currency_field_1.appendChild(createOptionTag(currency.currencyName, currency.id));
         currency_field_2.appendChild(createOptionTag(currency.currencyName, currency.id));

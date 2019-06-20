@@ -1,4 +1,4 @@
-let sw, refreshing;
+let sw, refreshing, networkDataReceived, cacheDataReceived;
 
 const app = async _ => {
     showProcessingDiv('Starting Application...');
@@ -7,6 +7,8 @@ const app = async _ => {
             appendCurrenciesToSelect(data.results);
         })
         .catch(error => {
+            console.log(error);
+            
             const error_msg = error.message.split('.')[0];
             showApplicationError(error_msg);
         });
@@ -41,7 +43,8 @@ form.addEventListener('submit', e => {
     if (currency_field_1.value === '' || currency_field_2.value === '') {
         return false;
     }
-    
+    networkDataReceived = false;
+    cacheDataReceived = false;
     showProcessingDiv('Converting...')
     const from = currency_field_1.value;
     const from_name = currency_field_1.options[currency_field_1.selectedIndex].text;
@@ -58,12 +61,30 @@ form.addEventListener('submit', e => {
     .then(function(response) {
         return response.json();
     }).then( data => {
+        networkDataReceived = true;        
         const result = amount * data[from_to];
         showResultDiv({from_name, to_name, amount, result});
     }).catch(error => {
-        console.log(error);
-        const error_msg = error.message.split('.')[0];
-        showApplicationError(error_msg);
+        if (!cacheDataReceived) {
+            const error_msg = error.message.split('.')[0];
+            if (error_msg.includes('Failed to fetch')) {
+                showApplicationError('Could not convert.. No connection Available');                
+            } else {
+                showApplicationError(error_msg);
+            }
+        }
+    })
+
+    getRate(from_to).then(res => {
+        if (!res) throw new Error('Rate not in db');
+        cacheDataReceived = true;
+        const result = amount * res.value;
+        if (!networkDataReceived) {
+            showResultDiv({from_name, to_name, amount, result});
+            hideApplicationError();
+        }
+    }).catch(e => {
+        // console.log(e);
     })
     
 });
